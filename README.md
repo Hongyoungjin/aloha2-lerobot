@@ -156,6 +156,8 @@ All robots will rise to a height that is easy for teleoperation.
 
 The teleoperation will start when the master side gripper is closed.
 
+Before running ``sleep.py``, stop both ``one_side_teleop.py`` processes with ``Ctrl-Z``. The sleep script sends its own puppet arm commands; if a teleop process is still running, that arm can keep trying to follow the master arm while ``sleep.py`` is moving it to the sleep pose.
+
 
 ## Example Usages
 
