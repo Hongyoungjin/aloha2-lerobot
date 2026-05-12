@@ -10,7 +10,7 @@ To train imitation learning algorithms, you would also need to install [ACT](htt
 
 This is a modified fork of Tony Zhao's original ALOHA repository for upgraded lab hardware and LeRobot-compatible dataset export. Original project: https://github.com/tonyzhaozh/aloha
 
-One hardware detail is intentionally asymmetric in our current setup: only the right arm's gripper motor was changed and recalibrated. The left arm still uses the previous gripper hardware because we could not disassemble it safely. As a result, right-arm gripper limits/configuration values may differ from the left side. If you build a symmetric setup, do not copy these gripper limits blindly; re-measure and update the relevant constants and motor/config files for your own hardware.
+Some gripper-related constants and mode settings in this fork are calibrated for our upgraded lab hardware. Do not copy these gripper limits blindly to another ALOHA setup; re-measure the open/close positions and update the relevant constants and motor/config files for your own hardware.
 
 ### Repo Structure
 - ``config``: a config for each robot, designating the port they should bind to, more details in quick start guide.

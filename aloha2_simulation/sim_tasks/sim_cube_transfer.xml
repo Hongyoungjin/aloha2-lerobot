@@ -1,0 +1,5 @@
+<mujoco>
+    <compiler assetdir = '/hdd1/menga/aloha_ws/src/aloha/aloha2_simulation/mujoco_menagerie/aloha'>
+   
+    <include file = 'scene.xml'/>
+</mujoco>
