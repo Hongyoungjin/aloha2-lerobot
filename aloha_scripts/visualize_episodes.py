@@ -23,24 +23,24 @@ def load_hdf5(dataset_dir, dataset_name):
         is_sim = root.attrs['sim']
         qpos = root['/observations/qpos'][()]
         qvel = root['/observations/qvel'][()]
-        effort = root['/observations/effort'][()]
+        # effort = root['/observations/effort'][()]
         action = root['/action'][()]
         image_dict = dict()
         for cam_name in root[f'/observations/images/'].keys():
             image_dict[cam_name] = root[f'/observations/images/{cam_name}'][()]
 
-    return qpos, qvel, effort, action, image_dict
+    return qpos, qvel, action, image_dict
 
 def main(args):
     dataset_dir = args['dataset_dir']
     episode_idx = args['episode_idx']
     dataset_name = f'episode_{episode_idx}'
 
-    qpos, qvel, effort, action, image_dict = load_hdf5(dataset_dir, dataset_name)
+    qpos, qvel, action, image_dict = load_hdf5(dataset_dir, dataset_name)
     save_videos(image_dict, DT, video_path=os.path.join(dataset_dir, dataset_name + '_video.mp4'))
-    visualize_joints(qpos, action, plot_path=os.path.join(dataset_dir, dataset_name + '_qpos.png'))
-    visualize_single(effort, 'effort', plot_path=os.path.join(dataset_dir, dataset_name + '_effort.png'))
-    visualize_single(action - qpos, 'tracking_error', plot_path=os.path.join(dataset_dir, dataset_name + '_error.png'))
+    # visualize_joints(qpos, action, plot_path=os.path.join(dataset_dir, dataset_name + '_qpos.png'))
+    # visualize_single(effort, 'effort', plot_path=os.path.join(dataset_dir, dataset_name + '_effort.png'))
+    # visualize_single(action - qpos, 'tracking_error', plot_path=os.path.join(dataset_dir, dataset_name + '_error.png'))
     # visualize_timestamp(t_list, dataset_path) # TODO addn timestamp back
 
 

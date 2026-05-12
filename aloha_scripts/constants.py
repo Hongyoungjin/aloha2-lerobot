@@ -1,6 +1,7 @@
 ### Task parameters
 
-DATA_DIR = '<put your data dir here>'
+DATA_DIR = '/media/hong/home1/hong0745/aloha/data'
+# DATA_DIR = '/media/hong/sunny/aloha_real_demo_data'
 TASK_CONFIGS = {
     'aloha_wear_shoe':{
         'dataset_dir': DATA_DIR + '/aloha_wear_shoe',
@@ -8,11 +9,102 @@ TASK_CONFIGS = {
         'episode_len': 1000,
         'camera_names': ['cam_high', 'cam_low', 'cam_left_wrist', 'cam_right_wrist']
     },
+    'real_test':{
+        'dataset_dir': DATA_DIR + '/real_test',
+        'num_episodes': 50,
+        'episode_len': 100,
+        'camera_names': ['cam_high', 'cam_low', 'cam_left_wrist', 'cam_right_wrist']
+    },
+    'real_transfer':{
+        'dataset_dir': DATA_DIR + '/real_transfer',
+        'num_episodes': 20,
+        'episode_len': 500,
+        'camera_names': ['cam_high', 'cam_low']
+    },
+    'real_pick_place':{
+        'dataset_dir': DATA_DIR + '/real_pick_place',
+        'num_episodes': 50,
+        'episode_len': 500,
+        'camera_names': ['cam_high', 'cam_low', 'cam_right_wrist']
+    },
+    'real_insert':{
+        'dataset_dir': DATA_DIR + '/real_insert',
+        'num_episodes': 50,
+        'episode_len': 700,
+        'camera_names': ['cam_high', 'cam_low']
+    },
+    
+    'real_stack':{
+        'dataset_dir': DATA_DIR + '/real_stack',
+        'num_episodes': 20 ,
+        'episode_len': 1100,
+        'camera_names': ['cam_high', 'cam_low', 'cam_left_wrist', 'cam_right_wrist']
+
+    },
+    'real_fold_towel':{
+        'dataset_dir': DATA_DIR + '/real_fold_towel',
+        'num_episodes': 20,
+        'episode_len': 700,
+        'camera_names': ['cam_high', 'cam_low', 'cam_left_wrist', 'cam_right_wrist']
+
+    },
+
+    'real_clean':{
+        'dataset_dir': DATA_DIR + '/real_clean',
+        'num_episodes': 20,
+        'episode_len': 1000,
+        'camera_names': ['cam_high', 'cam_low']
+
+    },
+    'real_unfold_tshirt':{
+        'dataset_dir': DATA_DIR + '/real_unfold_tshirt',
+        'num_episodes': 20,
+        'episode_len': 500,
+        'camera_names': ['cam_high', 'cam_low']
+
+    },
+    
+    'real_fold_tshirt':{
+        'dataset_dir': DATA_DIR + '/real_fold_tshirt',
+        'num_episodes': 20,
+        'episode_len': 1000,
+        'camera_names': ['cam_high', 'cam_low']
+
+    },
+    
+
+    
+    'real_test':{
+        'dataset_dir': DATA_DIR + '/real_test',
+        'num_episodes': 20,
+        'episode_len': 100,
+        'camera_names': ['cam_high', 'cam_low', 'cam_left_wrist', 'cam_right_wrist']
+
+    },
+    
+    
+    'real_nsf':{
+        'dataset_dir': DATA_DIR + '/real_nsf',
+        'num_episodes': 20,
+        'episode_len': 1000,
+        'camera_names': ['cam_high', 'cam_low']
+
+    },
+    
+    'demo_test':{
+        'dataset_dir': DATA_DIR + '/demo_test',
+        'num_episodes': 20,
+        'episode_len': 300,
+        'camera_names': ['cam_high', 'cam_low']
+
+    },
 }
 
 ### ALOHA fixed constants
-DT = 0.02
-JOINT_NAMES = ["waist", "shoulder", "elbow", "forearm_roll", "wrist_angle", "wrist_rotate"]
+DT = 0.02 # 50 Hz
+# DT = 0.1
+
+JOINT_NAMES = ["waist", "shoulder", "elbow", "forearm_z`roll", "wrist_angle", "wrist_rotate"]
 START_ARM_POSE = [0, -0.96, 1.16, 0, -0.3, 0, 0.02239, -0.02239,  0, -0.96, 1.16, 0, -0.3, 0, 0.02239, -0.02239]
 
 # Left finger position limits (qpos[7]), right_finger = -1 * left_finger
@@ -22,10 +114,11 @@ PUPPET_GRIPPER_POSITION_OPEN = 0.05800
 PUPPET_GRIPPER_POSITION_CLOSE = 0.01844
 
 # Gripper joint limits (qpos[6])
-MASTER_GRIPPER_JOINT_OPEN = 0.3083
-MASTER_GRIPPER_JOINT_CLOSE = -0.6842
-PUPPET_GRIPPER_JOINT_OPEN = 1.4910
-PUPPET_GRIPPER_JOINT_CLOSE = -0.6213
+MASTER_GRIPPER_JOINT_OPEN = 0.0214
+MASTER_GRIPPER_JOINT_CLOSE = -0.8053
+PUPPET_GRIPPER_JOINT_OPEN = 0.0613
+# PUPPET_GRIPPER_JOINT_CLOSE = -0.6213
+PUPPET_GRIPPER_JOINT_CLOSE = -0.9081
 
 ############################ Helper functions ############################
 
