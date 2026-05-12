@@ -2,3 +2,33 @@
 .DS_store
 /aloha.egg-info/
 /aloha_scripts/.idea/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Local IDE / agent state
+.vscode/
+.codex/
+/AGENTS.md
+/docs/mcp_rules.md
+/docs/next_session_prompt.md
+
+# Local scratch scripts
+/aloha_scripts/test.py
+
+# Catkin / local build outputs
+/build/
+/devel/
+/install/
+/log/
+
+# Local datasets and generated media
+*.hdf5
+*.h5
+*.mp4
+*_video.mp4
+*_qpos.png
+*_effort.png
+*_error.png

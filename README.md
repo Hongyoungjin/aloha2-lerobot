@@ -6,6 +6,12 @@ This codebase contains implementation for teleoperation and data collection with
 To build ALOHA, follow the [Hardware Assembly Tutorial](https://docs.google.com/document/d/1sgRZmpS7HMcZTPfGy3kAxDrqFMtNNzmK-yVtX5cKYME/edit?usp=sharing) and the quick start guide below.
 To train imitation learning algorithms, you would also need to install [ACT](https://github.com/tonyzhaozh/act).
 
+## Notes for This Fork
+
+This is a modified fork of Tony Zhao's original ALOHA repository for upgraded lab hardware and LeRobot-compatible dataset export. Original project: https://github.com/tonyzhaozh/aloha
+
+One hardware detail is intentionally asymmetric in our current setup: only the right arm's gripper motor was changed and recalibrated. The left arm still uses the previous gripper hardware because we could not disassemble it safely. As a result, right-arm gripper limits/configuration values may differ from the left side. If you build a symmetric setup, do not copy these gripper limits blindly; re-measure and update the relevant constants and motor/config files for your own hardware.
+
 ### Repo Structure
 - ``config``: a config for each robot, designating the port they should bind to, more details in quick start guide.
 - ``launch``: a ROS launch file for all 4 cameras and all 4 robots.
@@ -161,10 +167,10 @@ To set up a new terminal, run:
 
 The ``one_side_teleop.py`` we ran is for testing teleoperation and has no data collection. To collect data for an episode, run:
 
-    python3 record_episodes.py --dataset_dir <data save dir> --episode_idx 0
+    python3 record_episodes.py --task_name <task name> --episode_idx 0
 
-This will store a hdf5 file at ``<data save dir>``.
-To change episode length and other params, edit ``constants.py`` directly.
+This will store ``episode_<idx>.hdf5`` in the task's ``dataset_dir`` from ``constants.py``.
+To change the save directory, episode length, camera list, or other task params, edit ``TASK_CONFIGS`` in ``constants.py`` directly.
 
 To visualize the episode collected, run:
 
@@ -178,3 +184,57 @@ To lower 4 robots before e.g. cutting off power, run:
 
     python3 sleep.py
 
+## Dataset conversion to LeRobot
+
+The collection path should stay conservative: record raw ALOHA episodes as ``.hdf5`` first, validate them, then convert them to LeRobot format for training. This keeps the ROS teleoperation path unchanged and leaves the raw HDF5 files as a temporary recovery source until conversion is verified.
+
+Current decision: use LeRobot v2.1 as the default converted format for VLA and imitation-learning compatibility. The official LeRobot docs describe v3.0 as the current scalable format and provide an official migration command from v2.1 to v3.0. I did not find an official v3.0 to v2.1 downgrade path, so the safer default is to produce v2.1 first, then migrate upward to v3.0 when a trainer or the official LeRobot repo needs it.
+
+Dataset v2.1 already stores low-dimensional signals in Parquet and camera streams as MP4, so it should still be much smaller than the raw uncompressed HDF5 image arrays. Dataset v3.0 improves scaling by grouping multiple episodes into larger Parquet/MP4 shards and moving episode boundaries into metadata.
+
+Recommended workflow:
+
+    # 1. Inspect the raw HDF5 episodes
+    python3 tools/inspect_aloha_hdf5.py <data save dir>
+
+    # 2. Convert to LeRobot v2.1, the default compatibility target
+    python3 tools/convert_hdf5_to_lerobot.py \
+        --input-dir <data save dir> \
+        --repo-id <hf_user>/<dataset_name> \
+        --output-root <local lerobot output root> \
+        --task "<short natural-language task description>" \
+        --fps 50 \
+        --robot-type aloha
+
+    # 3. Smoke-check the converted dataset in LeRobot or the target trainer
+    python3 tools/validate_lerobot_dataset.py <hf_user>/<dataset_name> \
+        --root <local lerobot output root> \
+        --expected-fps 50
+
+To export v3.0 directly with the current official LeRobot API, pass ``--format v3.0``:
+
+    python3 tools/convert_hdf5_to_lerobot.py \
+        --input-dir <data save dir> \
+        --repo-id <hf_user>/<dataset_name> \
+        --output-root <local lerobot output root> \
+        --format v3.0 \
+        --task "<short natural-language task description>" \
+        --fps 50 \
+        --robot-type aloha
+
+To migrate a v2.1 dataset to v3.0 with the official LeRobot migration command, install a LeRobot version that includes v3.0 support and run:
+
+    python3 -m lerobot.datasets.v30.convert_dataset_v21_to_v30 --repo-id=<hf_user>/<dataset_name>
+
+For future conversion runs after this pipeline is trusted, add ``--delete-source-hdf5`` to delete raw HDF5 files after the converter finishes successfully:
+
+    python3 tools/convert_hdf5_to_lerobot.py \
+        --input-dir <data save dir> \
+        --repo-id <hf_user>/<dataset_name> \
+        --output-root <local lerobot output root> \
+        --task "<short natural-language task description>" \
+        --fps 50 \
+        --robot-type aloha \
+        --delete-source-hdf5
+
+Only use ``--delete-source-hdf5`` after the workflow has already been validated on a smaller batch, because the HDF5 files are the raw capture source. Once the v2.1 output is validated and backed up, the HDF5 files do not need to be kept for normal training.
