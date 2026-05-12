@@ -133,6 +133,8 @@ these devices.
     pip install einops
     pip install packaging
     pip install h5py
+    pip install pyarrow
+    pip install huggingface_hub
 
 ### Testing teleoperation
 
@@ -174,13 +176,53 @@ The ``one_side_teleop.py`` we ran is for testing teleoperation and has no data c
 This will store ``episode_<idx>.hdf5`` in the task's ``dataset_dir`` from ``constants.py``.
 To change the save directory, episode length, camera list, or other task params, edit ``TASK_CONFIGS`` in ``constants.py`` directly.
 
+To record directly to a local LeRobot v2.1 dataset instead of writing HDF5 first, run:
+
+    python3 record_episodes_lerobot.py \
+        --task_name <task name> \
+        --episode_idx 0 \
+        --repo-id <hf_user>/<dataset_name> \
+        --task "<short natural-language task description>"
+
+With ``--repo-id``, the local dataset is written under ``HF_LEROBOT_HOME`` if set, otherwise ``HF_HOME/lerobot`` if set, otherwise the standard LeRobot cache path ``~/.cache/huggingface/lerobot/<hf_user>/<dataset_name>``. To use a different local path, pass ``--output-root <local lerobot dataset root>``. To upload after recording, authenticate with Hugging Face first and add ``--push-to-hub``:
+
+    python3 record_episodes_lerobot.py \
+        --task_name <task name> \
+        --episode_idx 0 \
+        --repo-id <hf_user>/<dataset_name> \
+        --task "<short natural-language task description>" \
+        --push-to-hub
+
+This direct path writes Parquet state/action data plus per-camera MP4 videos and does not create ``episode_<idx>.hdf5``.
+If ``--episode_idx`` points to an existing LeRobot episode, the recorder overwrites that episode automatically.
+
+To delete a local direct LeRobot dataset, remove its local cache directory:
+
+    rm -rf "$HF_LEROBOT_HOME/<hf_user>/<dataset_name>"
+
+If ``HF_LEROBOT_HOME`` is not set, use the resolved local dataset path, such as ``~/.cache/huggingface/lerobot/<hf_user>/<dataset_name>``. If the dataset was pushed to Hugging Face Hub, local deletion does not delete the online dataset. Delete the Hub dataset separately:
+
+    hf repo delete <hf_user>/<dataset_name> --repo-type dataset
+
 To visualize the episode collected, run:
 
     python3 visualize_episodes.py --dataset_dir <data save dir> --episode_idx 0
 
+To create a combined quick-look video from a direct LeRobot recording, run:
+
+    python3 visualize_lerobot_episodes.py \
+        --repo-id <hf_user>/<dataset_name> \
+        --episode_idx 0
+
 To replay the episode collected with real robot, run:
 
     python3 replay_episodes.py --dataset_dir <data save dir> --episode_idx 0
+
+To replay a direct LeRobot recording with the real robot, stop both ``one_side_teleop.py`` processes first, then run:
+
+    python3 replay_lerobot_episodes.py \
+        --repo-id <hf_user>/<dataset_name> \
+        --episode_idx 0
 
 To lower 4 robots before e.g. cutting off power, run:
 
@@ -188,7 +230,7 @@ To lower 4 robots before e.g. cutting off power, run:
 
 ## Dataset conversion to LeRobot
 
-The collection path should stay conservative: record raw ALOHA episodes as ``.hdf5`` first, validate them, then convert them to LeRobot format for training. This keeps the ROS teleoperation path unchanged and leaves the raw HDF5 files as a temporary recovery source until conversion is verified.
+The conservative collection path is still available: record raw ALOHA episodes as ``.hdf5`` first, validate them, then convert them to LeRobot format for training. For routine collection after the robot setup is stable, ``record_episodes_lerobot.py`` can write LeRobot v2.1 directly and skip the temporary HDF5 file.
 
 Current decision: use LeRobot v2.1 as the default converted format for VLA and imitation-learning compatibility. The official LeRobot docs describe v3.0 as the current scalable format and provide an official migration command from v2.1 to v3.0. I did not find an official v3.0 to v2.1 downgrade path, so the safer default is to produce v2.1 first, then migrate upward to v3.0 when a trainer or the official LeRobot repo needs it.
 
