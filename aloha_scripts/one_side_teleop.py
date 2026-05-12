@@ -5,15 +5,16 @@ e = IPython.embed
 
 from interbotix_xs_modules.arm import InterbotixManipulatorXS
 from interbotix_xs_msgs.msg import JointSingleCommand
-from constants import MASTER2PUPPET_JOINT_FN, DT, START_ARM_POSE, MASTER_GRIPPER_JOINT_MID, PUPPET_GRIPPER_JOINT_CLOSE
+from constants import MASTER2PUPPET_JOINT_FN, DT
+from constants import START_ARM_POSE, MASTER_GRIPPER_JOINT_MID, PUPPET_GRIPPER_JOINT_CLOSE
 from robot_utils import torque_on, torque_off, move_arms, move_grippers, get_arm_gripper_positions
 
 def prep_robots(master_bot, puppet_bot):
     # reboot gripper motors, and set operating modes for all motors
     puppet_bot.dxl.robot_reboot_motors("single", "gripper", True)
-    puppet_bot.dxl.robot_set_operating_modes("group", "arm", "position")
+    puppet_bot.dxl.robot_set_operating_modes("group", "arm", "position", "time")
     puppet_bot.dxl.robot_set_operating_modes("single", "gripper", "current_based_position")
-    master_bot.dxl.robot_set_operating_modes("group", "arm", "position")
+    master_bot.dxl.robot_set_operating_modes("group", "arm", "position", "time")
     master_bot.dxl.robot_set_operating_modes("single", "gripper", "position")
     # puppet_bot.dxl.robot_set_motor_registers("single", "gripper", 'current_limit', 1000) # TODO(tonyzhaozh) figure out how to set this limit
     torque_on(puppet_bot)
@@ -44,8 +45,8 @@ def press_to_start(master_bot):
 
 def teleop(robot_side):
     """ A standalone function for experimenting with teleoperation. No data recording. """
-    puppet_bot = InterbotixManipulatorXS(robot_model="vx300s", group_name="arm", gripper_name="gripper", robot_name=f'puppet_{robot_side}', init_node=True)
-    master_bot = InterbotixManipulatorXS(robot_model="wx250s", group_name="arm", gripper_name="gripper", robot_name=f'master_{robot_side}', init_node=False)
+    puppet_bot = InterbotixManipulatorXS(robot_model="vx300s", group_name="arm", gripper_name=None, robot_name=f'puppet_{robot_side}', init_node=True)
+    master_bot = InterbotixManipulatorXS(robot_model="wx250s", group_name="arm", gripper_name=None, robot_name=f'master_{robot_side}', init_node=False)
 
     prep_robots(master_bot, puppet_bot)
     press_to_start(master_bot)
@@ -60,7 +61,7 @@ def teleop(robot_side):
         master_gripper_joint = master_bot.dxl.joint_states.position[6]
         puppet_gripper_joint_target = MASTER2PUPPET_JOINT_FN(master_gripper_joint)
         gripper_command.cmd = puppet_gripper_joint_target
-        puppet_bot.gripper.core.pub_single.publish(gripper_command)
+        puppet_bot.dxl.pub_single.publish(gripper_command)
         # sleep DT
         time.sleep(DT)
 

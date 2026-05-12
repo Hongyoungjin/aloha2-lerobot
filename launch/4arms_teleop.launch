@@ -1,4 +1,9 @@
 <launch>
+  <!-- Serial Number arguments for Intel Realsense D405 Camera -->
+  <arg name="serial_high" default="218622279624"/>
+  <arg name="serial_low"  default="218622278537"/>
+  <arg name="serial_lw"   default="218622274147"/>
+  <arg name="serial_rw"   default="218622278998"/>
 
   <arg name="robot_model_master"                default="wx250s"/>
   <arg name="robot_model_puppet"                default="vx300s"/>
@@ -10,6 +15,8 @@
   <arg name="puppet_modes_left"                 default="$(find aloha)/config/puppet_modes_left.yaml"/>
   <arg name="master_modes_right"                default="$(find aloha)/config/master_modes_right.yaml"/>
   <arg name="puppet_modes_right"                default="$(find aloha)/config/puppet_modes_right.yaml"/>
+  <arg name="master_motor_configs"              default="$(find interbotix_xsarm_control)/config/aloha_wx250s.yaml"/>
+  <arg name="puppet_motor_configs"              default="$(find interbotix_xsarm_control)/config/aloha_vx300s.yaml"/>
 
   <arg name="launch_driver"                     default="true"/>
   <arg name="use_sim"                           default="false"/>
@@ -26,6 +33,7 @@
     <arg name="base_link_frame"                   value="$(arg base_link_master)"/>
     <arg name="use_world_frame"                   value="false"/>
     <arg name="use_rviz"                          value="false"/>
+    <arg name="motor_configs"                     value="$(arg master_motor_configs)"/>
     <arg name="mode_configs"                      value="$(arg master_modes_left)"/>
     <arg name="use_sim"                           value="$(arg use_sim)"/>
   </include>
@@ -36,6 +44,7 @@
     <arg name="base_link_frame"                   value="$(arg base_link_master)"/>
     <arg name="use_world_frame"                   value="false"/>
     <arg name="use_rviz"                          value="false"/>
+    <arg name="motor_configs"                     value="$(arg master_motor_configs)"/>
     <arg name="mode_configs"                      value="$(arg master_modes_right)"/>
     <arg name="use_sim"                           value="$(arg use_sim)"/>
   </include>
@@ -47,6 +56,7 @@
     <arg name="base_link_frame"                   value="$(arg base_link_puppet)"/>
     <arg name="use_world_frame"                   value="false"/>
     <arg name="use_rviz"                          value="false"/>
+    <arg name="motor_configs"                     value="$(arg puppet_motor_configs)"/>
     <arg name="mode_configs"                      value="$(arg puppet_modes_left)"/>
     <arg name="use_sim"                           value="$(arg use_sim)"/>
   </include>
@@ -57,6 +67,7 @@
     <arg name="base_link_frame"                   value="$(arg base_link_puppet)"/>
     <arg name="use_world_frame"                   value="false"/>
     <arg name="use_rviz"                          value="false"/>
+    <arg name="motor_configs"                     value="$(arg puppet_motor_configs)"/>
     <arg name="mode_configs"                      value="$(arg puppet_modes_right)"/>
     <arg name="use_sim"                           value="$(arg use_sim)"/>
   </include>
@@ -138,6 +149,74 @@
     <param name="focus" value="40"/>
     <param name="autoexposure" value="true"/>
   </node>
+
+
+
+
+<!-- <group ns="cam_high">
+  <node pkg="usb_cam" type="usb_cam_node" name="usb_cam_high" output="screen">
+    <param name="video_device" value="/dev/CAM_HIGH"/>
+    <param name="framerate" value="60"/>
+    <param name="image_width" value="640"/>
+    <param name="image_height" value="480"/>
+    <param name="pixel_format" value="yuyv"/>
+    <param name="camera_frame_id" value="cam_high_link"/>
+    <param name="io_method" value="mmap"/>
+    <param name="autofocus" value="false"/>
+    <param name="autoexposure" value="true"/>
+  </node>
+  <remap from="image_raw"   to="/usb_cam_high/image_raw"/>
+  <remap from="camera_info" to="/usb_cam_high/camera_info"/>
+</group>
+
+<group ns="cam_low">
+  <node pkg="usb_cam" type="usb_cam_node" name="usb_cam_low" output="screen">
+    <param name="video_device" value="/dev/CAM_LOW"/>
+    <param name="framerate" value="60"/>
+    <param name="image_width" value="640"/>
+    <param name="image_height" value="480"/>
+    <param name="pixel_format" value="yuyv"/>
+    <param name="camera_frame_id" value="cam_low_link"/>
+    <param name="io_method" value="mmap"/>
+    <param name="autofocus" value="false"/>
+    <param name="autoexposure" value="true"/>
+  </node>
+  <remap from="image_raw"   to="/usb_cam_low/image_raw"/>
+  <remap from="camera_info" to="/usb_cam_low/camera_info"/>
+</group>
+
+<group ns="cam_left_wrist">
+  <node pkg="usb_cam" type="usb_cam_node" name="usb_cam_left_wrist" output="screen">
+    <param name="video_device" value="/dev/CAM_LEFT_WRIST"/>
+    <param name="framerate" value="60"/>
+    <param name="image_width" value="640"/>
+    <param name="image_height" value="480"/>
+    <param name="pixel_format" value="yuyv"/>
+    <param name="camera_frame_id" value="cam_left_wrist_link"/>
+    <param name="io_method" value="mmap"/>
+    <param name="autofocus" value="false"/>
+    <param name="autoexposure" value="true"/>
+  </node>
+  <remap from="image_raw"   to="/usb_cam_left_wrist/image_raw"/>
+  <remap from="camera_info" to="/usb_cam_left_wrist/camera_info"/>
+</group>
+
+<group ns="cam_right_wrist">
+  <node pkg="usb_cam" type="usb_cam_node" name="usb_cam_right_wrist" output="screen">
+    <param name="video_device" value="/dev/CAM_RIGHT_WRIST"/>
+    <param name="framerate" value="60"/>
+    <param name="image_width" value="640"/>
+    <param name="image_height" value="480"/>
+    <param name="pixel_format" value="yuyv"/>
+    <param name="camera_frame_id" value="cam_right_wrist_link"/>
+    <param name="io_method" value="mmap"/>
+    <param name="autofocus" value="false"/>
+    <param name="autoexposure" value="true"/>
+  </node>
+  <remap from="image_raw"   to="/usb_cam_right_wrist/image_raw"/>
+  <remap from="camera_info" to="/usb_cam_right_wrist/camera_info"/>
+</group> -->
+
 
 
 

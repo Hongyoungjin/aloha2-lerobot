@@ -38,9 +38,9 @@ class RealEnv:
     """
 
     def __init__(self, init_node, setup_robots=True):
-        self.puppet_bot_left = InterbotixManipulatorXS(robot_model="vx300s", group_name="arm", gripper_name="gripper",
+        self.puppet_bot_left = InterbotixManipulatorXS(robot_model="vx300s", group_name="arm", gripper_name=None,
                                                        robot_name=f'puppet_left', init_node=init_node)
-        self.puppet_bot_right = InterbotixManipulatorXS(robot_model="vx300s", group_name="arm", gripper_name="gripper",
+        self.puppet_bot_right = InterbotixManipulatorXS(robot_model="vx300s", group_name="arm", gripper_name=None,
                                                         robot_name=f'puppet_right', init_node=False)
         if setup_robots:
             self.setup_robots()
@@ -85,11 +85,11 @@ class RealEnv:
     def set_gripper_pose(self, left_gripper_desired_pos_normalized, right_gripper_desired_pos_normalized):
         left_gripper_desired_joint = PUPPET_GRIPPER_JOINT_UNNORMALIZE_FN(left_gripper_desired_pos_normalized)
         self.gripper_command.cmd = left_gripper_desired_joint
-        self.puppet_bot_left.gripper.core.pub_single.publish(self.gripper_command)
+        self.puppet_bot_left.dxl.pub_single.publish(self.gripper_command)
 
         right_gripper_desired_joint = PUPPET_GRIPPER_JOINT_UNNORMALIZE_FN(right_gripper_desired_pos_normalized)
         self.gripper_command.cmd = right_gripper_desired_joint
-        self.puppet_bot_right.gripper.core.pub_single.publish(self.gripper_command)
+        self.puppet_bot_right.dxl.pub_single.publish(self.gripper_command)
 
     def _reset_joints(self):
         reset_position = START_ARM_POSE[:6]
@@ -171,9 +171,9 @@ def test_real_teleop():
     render_cam = 'cam_left_wrist'
 
     # source of data
-    master_bot_left = InterbotixManipulatorXS(robot_model="wx250s", group_name="arm", gripper_name="gripper",
+    master_bot_left = InterbotixManipulatorXS(robot_model="wx250s", group_name="arm", gripper_name=None,
                                               robot_name=f'master_left', init_node=True)
-    master_bot_right = InterbotixManipulatorXS(robot_model="wx250s", group_name="arm", gripper_name="gripper",
+    master_bot_right = InterbotixManipulatorXS(robot_model="wx250s", group_name="arm", gripper_name=None,
                                                robot_name=f'master_right', init_node=False)
     setup_master_bot(master_bot_left)
     setup_master_bot(master_bot_right)
@@ -202,4 +202,3 @@ def test_real_teleop():
 
 if __name__ == '__main__':
     test_real_teleop()
-

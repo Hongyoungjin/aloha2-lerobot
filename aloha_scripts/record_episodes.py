@@ -21,16 +21,16 @@ def opening_ceremony(master_bot_left, master_bot_right, puppet_bot_left, puppet_
     """ Move all 4 robots to a pose where it is easy to start demonstration """
     # reboot gripper motors, and set operating modes for all motors
     puppet_bot_left.dxl.robot_reboot_motors("single", "gripper", True)
-    puppet_bot_left.dxl.robot_set_operating_modes("group", "arm", "position")
+    puppet_bot_left.dxl.robot_set_operating_modes("group", "arm", "position", "time")
     puppet_bot_left.dxl.robot_set_operating_modes("single", "gripper", "current_based_position")
-    master_bot_left.dxl.robot_set_operating_modes("group", "arm", "position")
+    master_bot_left.dxl.robot_set_operating_modes("group", "arm", "position", "time")
     master_bot_left.dxl.robot_set_operating_modes("single", "gripper", "position")
     # puppet_bot_left.dxl.robot_set_motor_registers("single", "gripper", 'current_limit', 1000) # TODO(tonyzhaozh) figure out how to set this limit
 
     puppet_bot_right.dxl.robot_reboot_motors("single", "gripper", True)
-    puppet_bot_right.dxl.robot_set_operating_modes("group", "arm", "position")
+    puppet_bot_right.dxl.robot_set_operating_modes("group", "arm", "position", "time")
     puppet_bot_right.dxl.robot_set_operating_modes("single", "gripper", "current_based_position")
-    master_bot_right.dxl.robot_set_operating_modes("group", "arm", "position")
+    master_bot_right.dxl.robot_set_operating_modes("group", "arm", "position", "time")
     master_bot_right.dxl.robot_set_operating_modes("single", "gripper", "position")
     # puppet_bot_left.dxl.robot_set_motor_registers("single", "gripper", 'current_limit', 1000) # TODO(tonyzhaozh) figure out how to set this limit
 
@@ -51,7 +51,7 @@ def opening_ceremony(master_bot_left, master_bot_right, puppet_bot_left, puppet_
     master_bot_left.dxl.robot_torque_enable("single", "gripper", False)
     master_bot_right.dxl.robot_torque_enable("single", "gripper", False)
     print(f'Close the gripper to start')
-    close_thresh = -0.3
+    close_thresh = -0.78
     pressed = False
     while not pressed:
         gripper_pos_left = get_arm_gripper_positions(master_bot_left)
@@ -68,9 +68,9 @@ def capture_one_episode(dt, max_timesteps, camera_names, dataset_dir, dataset_na
     print(f'Dataset name: {dataset_name}')
 
     # source of data
-    master_bot_left = InterbotixManipulatorXS(robot_model="wx250s", group_name="arm", gripper_name="gripper",
+    master_bot_left = InterbotixManipulatorXS(robot_model="wx250s", group_name="arm", gripper_name=None,
                                               robot_name=f'master_left', init_node=True)
-    master_bot_right = InterbotixManipulatorXS(robot_model="wx250s", group_name="arm", gripper_name="gripper",
+    master_bot_right = InterbotixManipulatorXS(robot_model="wx250s", group_name="arm", gripper_name=None,
                                                robot_name=f'master_right', init_node=False)
     env = make_real_env(init_node=False, setup_robots=False)
 
@@ -107,8 +107,8 @@ def capture_one_episode(dt, max_timesteps, camera_names, dataset_dir, dataset_na
     move_grippers([env.puppet_bot_left, env.puppet_bot_right], [PUPPET_GRIPPER_JOINT_OPEN] * 2, move_time=0.5)
 
     freq_mean = print_dt_diagnosis(actual_dt_history)
-    if freq_mean < 42:
-        return False
+    # if freq_mean < 42:
+    #     return False
 
     """
     For each timestep:
@@ -224,5 +224,3 @@ if __name__ == '__main__':
     parser.add_argument('--episode_idx', action='store', type=int, help='Episode index.', default=None, required=False)
     main(vars(parser.parse_args()))
     # debug()
-
-

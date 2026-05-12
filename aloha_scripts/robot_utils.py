@@ -136,7 +136,7 @@ def get_arm_joint_positions(bot):
     return bot.arm.core.joint_states.position[:6]
 
 def get_arm_gripper_positions(bot):
-    joint_position = bot.gripper.core.joint_states.position[6]
+    joint_position = bot.dxl.joint_states.position[6]
     return joint_position
 
 def move_arms(bot_list, target_pose_list, move_time=1):
@@ -156,12 +156,12 @@ def move_grippers(bot_list, target_pose_list, move_time):
     for t in range(num_steps):
         for bot_id, bot in enumerate(bot_list):
             gripper_command.cmd = traj_list[bot_id][t]
-            bot.gripper.core.pub_single.publish(gripper_command)
+            bot.dxl.pub_single.publish(gripper_command)
         time.sleep(DT)
 
 def setup_puppet_bot(bot):
     bot.dxl.robot_reboot_motors("single", "gripper", True)
-    bot.dxl.robot_set_operating_modes("group", "arm", "position")
+    bot.dxl.robot_set_operating_modes("group", "arm", "position", "time")
     bot.dxl.robot_set_operating_modes("single", "gripper", "current_based_position")
     torque_on(bot)
 

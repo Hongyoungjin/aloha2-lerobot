@@ -2,10 +2,10 @@ from interbotix_xs_modules.arm import InterbotixManipulatorXS
 from robot_utils import move_arms, torque_on
 
 def main():
-    puppet_bot_left = InterbotixManipulatorXS(robot_model="vx300s", group_name="arm", gripper_name="gripper", robot_name=f'puppet_left', init_node=True)
-    puppet_bot_right = InterbotixManipulatorXS(robot_model="vx300s", group_name="arm", gripper_name="gripper", robot_name=f'puppet_right', init_node=False)
-    master_bot_left = InterbotixManipulatorXS(robot_model="wx250s", group_name="arm", gripper_name="gripper", robot_name=f'master_left', init_node=False)
-    master_bot_right = InterbotixManipulatorXS(robot_model="wx250s", group_name="arm", gripper_name="gripper", robot_name=f'master_right', init_node=False)
+    puppet_bot_left = InterbotixManipulatorXS(robot_model="vx300s", group_name="arm", gripper_name=None, robot_name=f'puppet_left', init_node=True)
+    puppet_bot_right = InterbotixManipulatorXS(robot_model="vx300s", group_name="arm", gripper_name=None, robot_name=f'puppet_right', init_node=False)
+    master_bot_left = InterbotixManipulatorXS(robot_model="wx250s", group_name="arm", gripper_name=None, robot_name=f'master_left', init_node=False)
+    master_bot_right = InterbotixManipulatorXS(robot_model="wx250s", group_name="arm", gripper_name=None, robot_name=f'master_right', init_node=False)
 
     all_bots = [puppet_bot_left, puppet_bot_right]
     for bot in all_bots:
