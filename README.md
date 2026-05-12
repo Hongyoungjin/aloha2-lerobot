@@ -118,23 +118,16 @@ these devices.
 
 ### Software installation - Conda:
 
-    conda create -n aloha python=3.8.10
+Use the checked-in Conda environment file instead of installing the Python packages one by one. It reflects the working ``aloha`` environment on this machine, including the LeRobot direct-recording dependencies and CUDA 11.8 PyTorch wheels.
+
+    conda env create -f environment.yml
     conda activate aloha
-    pip install torchvision
-    pip install torch
-    pip install pyquaternion
-    pip install pyyaml
-    pip install rospkg
-    pip install pexpect
-    pip install mujoco==2.3.7
-    pip install dm_control==1.0.14
-    pip install opencv-python
-    pip install matplotlib
-    pip install einops
-    pip install packaging
-    pip install h5py
-    pip install pyarrow
-    pip install huggingface_hub
+
+If the environment already exists, update it with:
+
+    conda env update -n aloha -f environment.yml
+
+ROS Noetic and Interbotix packages are still installed through the ROS workspace steps above, not by ``environment.yml``.
 
 ### Testing teleoperation
 
